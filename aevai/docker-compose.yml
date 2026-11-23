@@ -1,6 +1,6 @@
 # Local copy of komodo-config/internal/interns, running this fork's frontend.
 # Same services/versions as online, minus cloudflared (tunnel) and backup (S3).
-# Rebuild after frontend changes: (cd ../argilla-frontend && BASE_URL="@@baseUrl@@" DIST_FOLDER=./dist npm run build) && docker compose up -d --build
+# Rebuild after changes: docker compose up -d --build   (same aevai/Dockerfile as the komodo interns stack)
 name: argilla-local
 
 x-argilla-env: &argilla-env
@@ -13,16 +13,9 @@ x-argilla-env: &argilla-env
 services:
   argilla:
     image: aevai/argilla-server:local
-    # official server image + this fork's built frontend + the server files we patched (keep the list short)
     build:
-      context: ../argilla-frontend/dist
-      additional_contexts:
-        server: ../argilla-server/src/argilla_server
-      dockerfile_inline: |
-        FROM argilla/argilla-server:${ARGILLA_VERSION:-v2.8.0}
-        RUN rm -rf /opt/venv/lib/python3.13/site-packages/argilla_server/static
-        COPY --chown=argilla:argilla . /opt/venv/lib/python3.13/site-packages/argilla_server/static
-        COPY --chown=argilla:argilla --from=server search_engine/commons.py /opt/venv/lib/python3.13/site-packages/argilla_server/search_engine/commons.py
+      context: ..
+      dockerfile: aevai/Dockerfile
     restart: unless-stopped
     environment:
       <<: *argilla-env

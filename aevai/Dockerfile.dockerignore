@@ -1,0 +1,7 @@
+**/node_modules
+argilla-frontend/dist
+argilla-frontend/.nuxt
+docs
+!docs/_source/_common
+argilla-v1
+.git
