@@ -19,7 +19,7 @@
         v-if="hasSpanQuestion(name)"
         :id="`${id}-${record.id}`"
         :name="name"
-        :title="title"
+        :title="fieldTitle(title)"
         :fieldText="content"
         :spanQuestion="getSpanQuestion(name)"
         :searchText="recordCriteria.committed.searchText.value.text"
@@ -27,7 +27,7 @@
       <TextField
         v-else-if="isTextType"
         :id="`${id}-${record.id}`"
-        :title="title"
+        :title="fieldTitle(title)"
         :fieldText="content"
         :useMarkdown="settings.use_markdown"
         :searchText="recordCriteria.committed.searchText.value.text"
@@ -36,7 +36,7 @@
       <ChatField
         v-else-if="isChatType"
         :id="`${id}-${record.id}`"
-        :title="title"
+        :title="fieldTitle(title)"
         :useMarkdown="settings.use_markdown"
         :content="content"
         :searchText="recordCriteria.committed.searchText.value.text"
@@ -44,13 +44,13 @@
       <ImageField
         v-else-if="isImageType"
         :name="name"
-        :title="title"
+        :title="fieldTitle(title)"
         :content="content"
       />
       <CustomField
         v-else
         :name="name"
-        :title="title"
+        :title="fieldTitle(title)"
         :content="content"
         :sdkRecord="sdkRecord"
         :settings="settings"
@@ -74,6 +74,10 @@ export default {
     },
   },
   methods: {
+    // aevai: per-record field titles, e.g. "Case {case}" -> "Case 3" from the record's metadata
+    fieldTitle(title) {
+      return title.replace(/\{(\w+)\}/g, (m, key) => this.record?.metadata?.[key] ?? m);
+    },
     getSpanQuestion(fieldName) {
       return this.spanQuestions?.find((q) => q.settings.field === fieldName);
     },
