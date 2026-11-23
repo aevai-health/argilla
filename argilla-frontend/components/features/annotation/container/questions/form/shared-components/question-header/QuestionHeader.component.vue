@@ -5,30 +5,16 @@
       v-text="question.title"
       v-required-field="{ show: question.isRequired, color: '#cf3832' }"
     />
-    <BaseIconWithBadge
-      class="icon-info"
-      v-if="showIcon"
-      icon="info"
-      :id="`${question.id}QuestionHeader`"
-      :show-badge="false"
-      iconColor="#acacac"
-      badge-vertical-position="top"
-      badge-horizontal-position="right"
-      badge-border-color="white"
-      v-tooltip="{
-        content: tooltipMessage,
-        open: openTooltip,
-      }"
-      role="tooltip"
-      :aria-label="tooltipMessage"
+    <!-- aevai: show the description under the title instead of behind an info tooltip -->
+    <p
+      v-if="question.description"
+      class="question-description --body2"
+      v-text="question.description"
     />
   </div>
 </template>
 
 <script>
-import "assets/icons/info";
-import "assets/icons/suggestion";
-
 export default {
   name: "QuestionHeader",
   props: {
@@ -37,33 +23,17 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      tooltipMessage: this.question.description,
-      openTooltip: false,
-      timer: null,
-    };
-  },
-  computed: {
-    showIcon() {
-      return !!this.question.description?.length;
-    },
-  },
-  watch: {
-    "question.description"() {
-      if (this.timer) clearTimeout(this.timer);
-      this.openTooltip = true;
-      this.tooltipMessage = this.question.description;
-
-      this.timer = setTimeout(() => {
-        this.openTooltip = false;
-      }, 2000);
-    },
-  },
 };
 </script>
 
 <style lang="scss" scoped>
+.question-description {
+  margin: 0.4em 0 0;
+  color: var(--fg-secondary);
+  font-weight: 400;
+  white-space: pre-line; // keep the blank line between explanation and scale
+}
+
 .title-area {
   color: var(--fg-primary);
   font-weight: 500;
