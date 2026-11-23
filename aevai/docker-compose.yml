@@ -13,13 +13,16 @@ x-argilla-env: &argilla-env
 services:
   argilla:
     image: aevai/argilla-server:local
-    # official server image + this fork's built frontend, so the backend matches online exactly
+    # official server image + this fork's built frontend + the server files we patched (keep the list short)
     build:
       context: ../argilla-frontend/dist
+      additional_contexts:
+        server: ../argilla-server/src/argilla_server
       dockerfile_inline: |
         FROM argilla/argilla-server:${ARGILLA_VERSION:-v2.8.0}
         RUN rm -rf /opt/venv/lib/python3.13/site-packages/argilla_server/static
         COPY --chown=argilla:argilla . /opt/venv/lib/python3.13/site-packages/argilla_server/static
+        COPY --chown=argilla:argilla --from=server search_engine/commons.py /opt/venv/lib/python3.13/site-packages/argilla_server/search_engine/commons.py
     restart: unless-stopped
     environment:
       <<: *argilla-env
@@ -34,7 +37,7 @@ services:
     depends_on: [postgres, elasticsearch, redis]
 
   worker:
-    image: argilla/argilla-server:${ARGILLA_VERSION:-v2.8.0}
+    image: aevai/argilla-server:local
     restart: unless-stopped
     environment:
       <<: *argilla-env

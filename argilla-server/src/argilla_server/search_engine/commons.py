@@ -21,7 +21,7 @@ from uuid import UUID
 from elasticsearch8 import AsyncElasticsearch
 from opensearchpy import AsyncOpenSearch
 
-from argilla_server.enums import MetadataPropertyType, RecordSortField, ResponseStatusFilter, SimilarityOrder
+from argilla_server.enums import MetadataPropertyType, RecordSortField, ResponseStatusFilter, SimilarityOrder, SortOrder
 from argilla_server.models import (
     Dataset,
     Field,
@@ -441,16 +441,9 @@ class BaseElasticAndOpenSearchEngine(SearchEngine):
 
         es_query = {"bool": bool_query}
 
-        if user_id:
-            # See https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#function-random
-            # If an `user_id` is provided we use it as seed for the `random_score` function to sort the records for the
-            # user in a "random" and different way for each user, but still deterministic for the same user.
-            es_query = {
-                "function_score": {
-                    "query": es_query,
-                    "functions": [{"random_score": {"seed": str(user_id), "field": "_seq_no"}}],
-                }
-            }
+        # aevai: upstream shuffles each user's queue (random_score seeded by user_id); we show records in upload order
+        if user_id and not sort:
+            sort = [Order(scope=RecordFilterScope(property=RecordSortField.inserted_at.value), order=SortOrder.asc)]
 
         es_sort = self.build_elasticsearch_sort(sort) if sort else None
         response = await self._index_search_request(index, query=es_query, size=limit, from_=offset, sort=es_sort)
