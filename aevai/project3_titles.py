@@ -1,6 +1,6 @@
 """Local only (needs this fork's frontend): move project3's "### Case N – Answer X" heading into the field titles.
 
-Field titles become "Case {case_no}" / "Answer {answer_letter}", filled per record from metadata (see RecordFields.vue).
+Field titles become "Case {case_no}" / "Alva’s progression advice – Answer {answer_letter}", filled per record from metadata (see RecordFields.vue).
 Run after copy_from_online.py. Env: LOCAL_API_KEY, optional LOCAL_URL.
 """
 import os
@@ -16,7 +16,7 @@ for name in ("case_no", "answer_letter"):  # must differ from field names
     if name not in [m.name for m in s.metadata]:
         s.metadata.add(rg.TermsMetadataProperty(name=name, visible_for_annotators=True))  # annotators' UI only gets visible metadata
 s.fields["case"].title = "Case {case_no}"
-s.fields["answer"].title = "Answer {answer_letter}"
+s.fields["answer"].title = "Alva’s progression advice – Answer {answer_letter}"
 ds.update()
 
 recs = []
@@ -25,5 +25,6 @@ for r in ds.records:
     if m:
         recs.append(rg.Record(id=r.id, fields={"case": r.fields["case"][m.end():], "answer": r.fields["answer"]},
                               metadata={"case_no": m[1], "answer_letter": m[2]}))
-ds.records.log(recs)
+if recs:  # already moved on a re-run
+    ds.records.log(recs)
 print(f"updated {len(recs)} records")
