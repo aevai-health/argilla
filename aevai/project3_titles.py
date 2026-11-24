@@ -1,4 +1,4 @@
-"""Local only (needs this fork's frontend): move project3's "### Case N – Answer X" heading into the field titles.
+"""Needs this fork's frontend (applied to local and online 2026-11-24): move project3's "### Case N – Answer X" heading into the field titles.
 
 Field titles become "Case {case_no}" / "Alva’s progression advice – Answer {answer_letter}", filled per record from metadata (see RecordFields.vue).
 Run after copy_from_online.py. Env: LOCAL_API_KEY, optional LOCAL_URL.
