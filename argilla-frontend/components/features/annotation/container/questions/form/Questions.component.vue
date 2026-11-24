@@ -14,6 +14,7 @@
       <div
         v-for="(question, index) in questions"
         :key="question.id"
+        v-show="isShown(question)"
         :aria-label="'Question: ' + question.name"
         @keydown.arrow-up.prevent="
           updateQuestionAutofocus(autofocusPosition - 1)
@@ -81,6 +82,7 @@
 
 <script>
 import { useQuestionsViewModel } from "./useQuestionsViewModel";
+import { lowScoreCommentNeeded } from "~/v1/domain/entities/question/lowScoreComment";
 export default {
   name: "QuestionsComponent",
   props: {
@@ -124,6 +126,9 @@ export default {
     });
   },
   methods: {
+    isShown(question) {
+      return lowScoreCommentNeeded(question, this.questions);
+    },
     // This is terrible
     handleKeyboardToMoveLoop(parent) {
       return (e) => {

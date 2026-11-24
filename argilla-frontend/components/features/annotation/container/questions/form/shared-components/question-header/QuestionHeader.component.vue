@@ -3,7 +3,10 @@
     <span
       class="suggestion-info"
       v-text="question.title"
-      v-required-field="{ show: question.isRequired, color: '#cf3832' }"
+      v-required-field="{
+        show: question.isRequired || question.name.endsWith('_comment'),
+        color: '#cf3832',
+      }"
     />
     <!-- aevai: show the description under the title instead of behind an info tooltip -->
     <p

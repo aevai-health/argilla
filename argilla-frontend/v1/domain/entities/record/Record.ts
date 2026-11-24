@@ -6,6 +6,7 @@ import { Score } from "../similarity/Score";
 import { MetadataRecord } from "../metadata/MetadataRecord";
 import { TaskDistribution } from "../distribution/TaskDistribution";
 import { RecordAnswer } from "./RecordAnswer";
+import { lowScoreCommentNeeded } from "../question/lowScoreComment";
 
 const DEFAULT_STATUS = "pending";
 
@@ -121,9 +122,14 @@ export class Record {
         return input.hasValidValues;
       });
 
+    const lowScoreCommentsAreAnswered = this.questions
+      .filter((q) => q.name.endsWith("_comment"))
+      .every((q) => !lowScoreCommentNeeded(q, this.questions) || q.isAnswered);
+
     return (
       requiredQuestionsAreCompletedCorrectly &&
-      optionalQuestionsCompletedAreCorrectlyEntered
+      optionalQuestionsCompletedAreCorrectlyEntered &&
+      lowScoreCommentsAreAnswered
     );
   }
 
