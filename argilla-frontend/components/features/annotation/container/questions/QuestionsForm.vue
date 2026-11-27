@@ -17,23 +17,7 @@
     </div>
     <div class="footer-form">
       <div class="footer-form__content">
-        <BaseButton
-          v-if="showDiscardButton || isDiscarding"
-          type="button"
-          class="button--discard"
-          :class="isDiscarding ? '--button--discarding' : null"
-          :loading="isDiscarding"
-          :loading-progress="progress"
-          :disabled="isDiscardDisabled || isSaving || !record.id"
-          :data-title="!isSaving ? draftSavingTooltip : null"
-          @on-click="onDiscard"
-        >
-          <span
-            v-if="!isDiscarding"
-            class="button__shortcuts"
-            v-text="'⌫'"
-          /><span v-text="$t('questions_form.discard')" />
-        </BaseButton>
+        <!-- aevai: no Discard button (or ⌫ shortcut); annotators must answer every record -->
         <BaseButton
           type="button"
           class="button--draft"
@@ -262,10 +246,6 @@ export default {
         }
         case "Enter": {
           this.onSubmit();
-          break;
-        }
-        case "Backspace": {
-          this.onDiscard();
           break;
         }
         default: {
